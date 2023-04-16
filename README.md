@@ -4,7 +4,7 @@
 
 3. Create config and models directory
 
-4. Add MongoDb Path in next.confog.js
+4. Add MongoDb Path in next.config.js
 
             const nextConfig = {
               env: {
