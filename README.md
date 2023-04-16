@@ -6,73 +6,73 @@
 
 4. Add MongoDb Path in next.confog.js
 
-const nextConfig = {
-  env: {
-    MONGODB_URI: "mongodb",
-  },
-}
-
-5. Inside config create dbConnect.js
-Write followinf code inside dbConnect.js
-//////////////////////////////////////////////
-
-import mongoose from 'mongoose'
-
-const MONGODB_URI = process.env.MONGODB_URI
-
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment'
-  )
-}
-
-let cached = global.mongoose
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null }
-}
-
-async function dbConnect() {
-  if (cached.conn) {
-    return cached.conn
-  }
-
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
+    const nextConfig = {
+      env: {
+        MONGODB_URI: "mongodb",
+      },
     }
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose
-    })
-  }
+5. Inside config create dbConnect.js
+Write following code inside dbConnect.js
+//////////////////////////////////////////////
 
-  try {
-    cached.conn = await cached.promise
-  } catch (e) {
-    cached.promise = null
-    throw e
-  }
+      import mongoose from 'mongoose'
 
-  return cached.conn
-}
+      const MONGODB_URI = process.env.MONGODB_URI
 
-export default dbConnect
+      if (!MONGODB_URI) {
+        throw new Error(
+          'Please define the MONGODB_URI environment'
+        )
+      }
+
+      let cached = global.mongoose
+
+      if (!cached) {
+        cached = global.mongoose = { conn: null, promise: null }
+      }
+
+      async function dbConnect() {
+        if (cached.conn) {
+          return cached.conn
+        }
+
+        if (!cached.promise) {
+          const opts = {
+            bufferCommands: false,
+          }
+
+          cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+            return mongoose
+          })
+        }
+
+        try {
+          cached.conn = await cached.promise
+        } catch (e) {
+          cached.promise = null
+          throw e
+        }
+
+        return cached.conn
+      }
+
+      export default dbConnect
 
 ///////////////////////////////////////////
 
 6. Inside Models create file user.js with following code
 ////////////////////////////////////////////////////////
 
-import mongoose, { model } from "mongoose";
+    import mongoose, { model } from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-});
+    const userSchema = new mongoose.Schema({
+      name: String,
+      email: String,
+      password: String,
+    });
 
-export default mongoose.models.User || mongoose.model("User", userSchema);
+    export default mongoose.models.User || mongoose.model("User", userSchema);
 
 /////////////////////////////////////////////////////////
 
@@ -81,28 +81,28 @@ export default mongoose.models.User || mongoose.model("User", userSchema);
 8. Inside user directory create index.js with following code
 
 /////////////////////////////////////////////////////////////////////////
-import User from "../../../../models/User";
-import dbConnect from "../../../../config/dbConnect";
+      import User from "../../../../models/User";
+      import dbConnect from "../../../../config/dbConnect";
 
-dbConnect();
+      dbConnect();
 
-export default async (req, res) => {
-  const { method } = req;
+      export default async (req, res) => {
+        const { method } = req;
 
-  switch (method) {
-    case "GET":
-      try {
-        const user = await User.find({}).sort({ _id: -1 });
-        res.status(200).json({ success: true, data: user });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    default:
-      res.status(400).json({ success: false });
-      break;
-  }
-};
+        switch (method) {
+          case "GET":
+            try {
+              const user = await User.find({}).sort({ _id: -1 });
+              res.status(200).json({ success: true, data: user });
+            } catch (error) {
+              res.status(400).json({ success: false });
+            }
+            break;
+          default:
+            res.status(400).json({ success: false });
+            break;
+        }
+      };
 
 /////////////////////////////////////////////////////////////////////////
 
